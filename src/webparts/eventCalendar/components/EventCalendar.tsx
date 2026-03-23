@@ -5,7 +5,7 @@
  *   loading/error states, and the event detail side panel. Renders a configuration
  *   placeholder when no list has been selected.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

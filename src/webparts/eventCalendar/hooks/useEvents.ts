@@ -5,7 +5,7 @@
  *              {@link fetchEvents} with state management, cancellation safety,
  *              and dependency-driven re-fetching.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

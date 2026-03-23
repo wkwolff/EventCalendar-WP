@@ -4,7 +4,7 @@
  *              web part. These types are consumed by the SPFx property pane and
  *              passed down to the root React component.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 /** FullCalendar initial view variants exposed to end users. */

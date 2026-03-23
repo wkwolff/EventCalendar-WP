@@ -4,7 +4,7 @@
  *   grid views. Maps internal `IEventItem` objects to FullCalendar's `EventInput`
  *   format and routes click events back up to open the detail panel.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

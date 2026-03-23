@@ -4,7 +4,7 @@
  *   and card display configuration. These interfaces bridge the SPFx web part
  *   property bag and the React component tree.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import { DefaultView, CalendarViewType, ViewMode, ListLayout } from '../models/IWebPartProps';

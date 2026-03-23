@@ -4,7 +4,7 @@
  *              Must be called once during `onInit()` of the web part so that all
  *              service modules can retrieve a pre-configured SPFI instance.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import { WebPartContext } from '@microsoft/sp-webpart-base';

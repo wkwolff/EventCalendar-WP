@@ -4,7 +4,7 @@
  *              Used to populate the property-pane column-mapping dropdowns and
  *              the additional-fields picker.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 /**

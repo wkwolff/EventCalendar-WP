@@ -1,6 +1,6 @@
-# TH - Events
+# WC - Events
 
-A SharePoint Framework (SPFx) web part that displays events from any SharePoint list in filmstrip, compact list, or full calendar views. Designed for TidalHealth SharePoint Online sites.
+A SharePoint Framework (SPFx) web part that displays events from any SharePoint list in filmstrip, compact list, or full calendar views. Designed for Wolff Creative SharePoint Online sites.
 
 ![SPFx Version](https://img.shields.io/badge/SPFx-1.22.2-green.svg)
 ![Node.js Version](https://img.shields.io/badge/Node.js-v22.14+-blue.svg)
@@ -24,7 +24,7 @@ A SharePoint Framework (SPFx) web part that displays events from any SharePoint 
 
 | Solution | Author(s) |
 |----------|-----------|
-| TH - Events | W. Kevin Wolff, Microsoft Developer, TidalHealth |
+| WC - Events | W. Kevin Wolff, Wolff Creative |
 
 ## Version History
 
@@ -52,7 +52,7 @@ npm install
 npm run start
 ```
 
-This starts the local workbench dev server at `https://localhost:4321` and opens your SharePoint site's workbench. Add the **TH - Events** web part to the page and configure it via the property pane.
+This starts the local workbench dev server at `https://localhost:4321` and opens your SharePoint site's workbench. Add the **WC - Events** web part to the page and configure it via the property pane.
 
 ### 3. Build for production
 
@@ -78,7 +78,7 @@ npm run clean
 2. Navigate to your tenant **App Catalog** site (e.g., `https://yourtenant.sharepoint.com/sites/appcatalog`)
 3. Upload `sharepoint/solution/event-calendar-wp.sppkg` to the **Apps for SharePoint** library
 4. In the deployment dialog, check **"Make this solution available to all sites in the organization"** for tenant-wide deployment
-5. On any SharePoint page, edit the page and add the **TH - Events** web part
+5. On any SharePoint page, edit the page and add the **WC - Events** web part
 
 ## Configuration
 
@@ -189,8 +189,8 @@ src/webparts/eventCalendar/
 
 ## License
 
-This project is proprietary to TidalHealth. Unauthorized distribution is prohibited.
+This project is proprietary to Wolff Creative. Unauthorized distribution is prohibited.
 
 ---
 
-*Developed by W. Kevin Wolff, Microsoft Developer, TidalHealth*
+*Developed by W. Kevin Wolff, Wolff Creative*

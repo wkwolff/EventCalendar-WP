@@ -5,7 +5,7 @@
  *   layout. Handles date formatting, image resolution from extra fields, and renders
  *   additional user-selected fields via FieldBadge components.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

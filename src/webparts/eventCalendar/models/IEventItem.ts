@@ -4,7 +4,7 @@
  *              Represents a single calendar event after it has been fetched and
  *              mapped from a SharePoint list item into a framework-agnostic shape.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 /**

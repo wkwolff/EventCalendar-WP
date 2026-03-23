@@ -5,7 +5,7 @@
  *   and all user-selected extra fields using the FieldBadge component in "detailed"
  *   mode. Image fields are separated from regular fields for layout prioritization.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

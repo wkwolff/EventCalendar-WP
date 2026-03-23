@@ -8,7 +8,7 @@
  *   HTTP URLs, and SharePoint file paths. Badge colors are resolved at runtime
  *   from the SPFx theme.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

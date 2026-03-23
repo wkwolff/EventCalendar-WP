@@ -6,7 +6,7 @@
  *   configuration (list picker, column mapping, extra field selection) and display
  *   settings (view mode, calendar type, list layout, card toggles).
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

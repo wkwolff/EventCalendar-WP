@@ -6,7 +6,7 @@
  *              image extraction from various SharePoint column types, and
  *              field-level safety filtering.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import { getSP } from './PnPSetup';

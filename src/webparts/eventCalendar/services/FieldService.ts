@@ -5,7 +5,7 @@
  *              filtering, and intelligent auto-detection of standard event
  *              column mappings so the property pane can offer sensible defaults.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import { getSP } from './PnPSetup';

@@ -4,7 +4,7 @@
  *   ("Today", "Tomorrow", weekday names, "Later this month", or "Month Year").
  *   Each group renders a date header followed by compact EventCard rows.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

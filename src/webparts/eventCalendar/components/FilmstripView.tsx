@@ -4,7 +4,7 @@
  *   cards in a single-row track with CSS scroll-snap behavior and dot-style
  *   pagination indicators. Scroll position syncs with the active page dot.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

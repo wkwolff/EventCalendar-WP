@@ -18,7 +18,7 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
     "group": { "default": "Advanced" },
-    "title": { "default": "TH - Events" },
+    "title": { "default": "WC - Events" },
     "description": { "default": "Display events from a SharePoint list in filmstrip, compact list, or calendar views." },
     "officeFabricIconFontName": "Calendar",
     "properties": {

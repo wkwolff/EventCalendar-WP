@@ -4,7 +4,7 @@
  *   list view and calendar view. Only rendered when the web part is configured
  *   to show both views. Uses Fluent UI IconButton with inline theme-aware styling.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';

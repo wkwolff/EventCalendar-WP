@@ -4,7 +4,7 @@
  *              fields (columns) for a given list. Used by the property pane to
  *              populate column-mapping dropdowns and the display-fields picker.
  * @author W. Kevin Wolff
- * @copyright TidalHealth
+ * @copyright Wolff Creative
  */
 
 import * as React from 'react';
