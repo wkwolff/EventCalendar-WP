@@ -1,6 +1,9 @@
 {
-  "name": "event-calendar-wp",
-  "version": "0.0.1",
+  "name": "th-events-webpart",
+  "version": "1.0.0",
+  "description": "TH - Events: SharePoint Framework web part for displaying events in filmstrip, compact list, or calendar views.",
+  "author": "W. Kevin Wolff <TidalHealth>",
+  "license": "UNLICENSED",
   "private": true,
   "engines": {
     "node": ">=22.14.0 < 23.0.0"

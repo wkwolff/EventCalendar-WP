@@ -1,6 +1,21 @@
+/**
+ * @file FieldService.ts
+ * @description Service layer for retrieving and analyzing SharePoint list field
+ *              (column) metadata. Provides field fetching, display-field
+ *              filtering, and intelligent auto-detection of standard event
+ *              column mappings so the property pane can offer sensible defaults.
+ * @author W. Kevin Wolff
+ * @copyright TidalHealth
+ */
+
 import { getSP } from './PnPSetup';
 import { IFieldInfo } from '../models/IFieldInfo';
 
+/**
+ * Internal/system field names that should never appear in the property-pane
+ * dropdowns. These are SharePoint infrastructure columns that have no
+ * meaningful user-facing value for a calendar web part.
+ */
 const SYSTEM_FIELDS = new Set([
   'ContentType', 'Attachments', '_ModerationComments', 'File_x0020_Type',
   'MetaInfo', 'DocIcon', '_HasCopyDestinations', '_CopySource',
@@ -18,24 +33,37 @@ const SYSTEM_FIELDS = new Set([
   '_VirusInfo', '_CommentFlags', '_CommentCount',
 ]);
 
-// Field types that cannot be queried via REST $select
+/** Field types that cannot be projected via REST `$select`. */
 const UNSUPPORTED_FIELD_TYPES = new Set([
   'Geolocation',
 ]);
 
-// Fields with known REST API issues
+/** Specific field names known to cause REST API errors. */
 const UNSUPPORTED_FIELD_NAMES = new Set([
   'ParticipantsPicker',
   'ParticipantsPickerId',
 ]);
 
-/** Fetch ALL non-system fields for a list (used for column mapping dropdowns) */
+/**
+ * Fetches all user-facing fields for a SharePoint list, filtering out hidden
+ * columns, system infrastructure columns, and field types incompatible with
+ * REST queries.
+ *
+ * Used to populate the column-mapping dropdowns and the additional-fields
+ * picker in the web part property pane.
+ *
+ * @param listId - GUID of the SharePoint list.
+ * @returns A promise resolving to an array of {@link IFieldInfo} objects.
+ */
 export async function fetchAllListFields(listId: string): Promise<IFieldInfo[]> {
   const sp = getSP();
+
+  // Request only non-hidden fields with the minimum projection needed
   const fields = await sp.web.lists.getById(listId).fields
     .filter("Hidden eq false")
     .select('InternalName', 'Title', 'TypeAsString', 'Required')();
 
+  // Apply three layers of filtering: system names, unsupported types, blocked names
   return fields
     .filter((f: { InternalName: string; TypeAsString: string }) =>
       !SYSTEM_FIELDS.has(f.InternalName) &&
@@ -50,7 +78,15 @@ export async function fetchAllListFields(listId: string): Promise<IFieldInfo[]> 
     }));
 }
 
-/** Fetch display fields (excludes the mapped core fields) */
+/**
+ * Returns the subset of fields eligible for the "additional display fields"
+ * picker by excluding columns already assigned to a core mapping slot and
+ * the synthetic `ID` column.
+ *
+ * @param allFields    - Full field list from {@link fetchAllListFields}.
+ * @param mappedFields - Internal names of columns currently assigned to core mappings.
+ * @returns Filtered array of {@link IFieldInfo} suitable for the display-fields picker.
+ */
 export function getDisplayFields(
   allFields: IFieldInfo[],
   mappedFields: string[]
@@ -62,7 +98,29 @@ export function getDisplayFields(
   );
 }
 
-/** Auto-detect standard event list fields, returns suggested mappings */
+/**
+ * Inspects the available fields of a list and returns best-guess column
+ * mappings for an event calendar.
+ *
+ * Detection strategy (in priority order):
+ * 1. **Standard Events list**: looks for `EventDate` / `EndDate` / `fAllDayEvent`
+ *    (the OOB SharePoint "Events" or "Calendar" list schema).
+ * 2. **Custom list with recognizable names**: scans DateTime fields for common
+ *    names like "StartDate", "Start", "End", "EndDate", etc.
+ * 3. **Fallback**: uses the first two DateTime fields found as start/end.
+ *
+ * Category and location are detected independently by scanning Choice/Text
+ * fields for keyword matches.
+ *
+ * @param fields - The full field list retrieved by {@link fetchAllListFields}.
+ * @returns An object with suggested internal-name mappings for each core slot.
+ *
+ * @example
+ * ```ts
+ * const mappings = autoDetectFieldMappings(fields);
+ * // { titleField: 'Title', startDateField: 'EventDate', ... }
+ * ```
+ */
 export function autoDetectFieldMappings(fields: IFieldInfo[]): {
   titleField: string;
   startDateField: string;
@@ -71,9 +129,11 @@ export function autoDetectFieldMappings(fields: IFieldInfo[]): {
   categoryField: string;
   locationField: string;
 } {
+  // Build a lookup map for O(1) existence checks by internal name
   const fieldMap = new Map(fields.map(f => [f.internalName, f]));
 
-  // Detect category field
+  // --- Category detection ---
+  // Prefer an exact "Category" column; otherwise scan for keyword matches
   let categoryField = '';
   if (fieldMap.has('Category')) categoryField = 'Category';
   else {
@@ -87,7 +147,8 @@ export function autoDetectFieldMappings(fields: IFieldInfo[]): {
     }
   }
 
-  // Detect location field
+  // --- Location detection ---
+  // Check well-known names first, then fall back to keyword scan
   let locationField = '';
   if (fieldMap.has('Location')) locationField = 'Location';
   else if (fieldMap.has('WorkAddress')) locationField = 'WorkAddress';
@@ -101,7 +162,7 @@ export function autoDetectFieldMappings(fields: IFieldInfo[]): {
     }
   }
 
-  // Standard Events list fields
+  // --- Strategy 1: Standard OOB Events list schema ---
   if (fieldMap.has('EventDate') && fieldMap.has('EndDate')) {
     return {
       titleField: 'Title',
@@ -113,7 +174,7 @@ export function autoDetectFieldMappings(fields: IFieldInfo[]): {
     };
   }
 
-  // Try common custom field names
+  // --- Strategy 2: Scan DateTime fields for recognizable names ---
   const dateFields = fields.filter(f =>
     f.fieldType === 'DateTime' || f.fieldType === 'Date'
   );
@@ -133,7 +194,7 @@ export function autoDetectFieldMappings(fields: IFieldInfo[]): {
     }
   }
 
-  // Fallback: use first two date fields
+  // --- Strategy 3: Fallback — use first two DateTime fields by ordinal position ---
   if (!startField && dateFields.length > 0) startField = dateFields[0].internalName;
   if (!endField && dateFields.length > 1) endField = dateFields[1].internalName;
 

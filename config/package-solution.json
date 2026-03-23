@@ -4,11 +4,12 @@
     "name": "event-calendar-wp-client-side-solution",
     "id": "da90053e-aaf5-4223-a87f-f68afc225d1e",
     "version": "1.0.0.0",
+    "title": "TH - Events",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,
     "developer": {
-      "name": "",
+      "name": "W. Kevin Wolff, Microsoft Developer, TidalHealth",
       "websiteUrl": "",
       "privacyUrl": "",
       "termsOfUseUrl": "",
@@ -16,10 +17,10 @@
     },
     "metadata": {
       "shortDescription": {
-        "default": "event-calendar-wp description"
+        "default": "Display events from a SharePoint list in filmstrip, compact list, or calendar views."
       },
       "longDescription": {
-        "default": "event-calendar-wp description"
+        "default": "TH - Events web part displays events from any SharePoint list with configurable field mappings, filmstrip and compact list layouts, calendar view, and property pane controls for category, location, time, and image display."
       },
       "screenshotPaths": [],
       "videoUrl": "",

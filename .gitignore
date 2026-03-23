@@ -36,3 +36,14 @@ obj
 
 # Styles Generated Code
 *.scss.ts
+
+# SharePoint build output
+sharepoint/
+
+# Environment files
+.env
+.env.local
+
+# Editor backups
+*~
+*.swp
