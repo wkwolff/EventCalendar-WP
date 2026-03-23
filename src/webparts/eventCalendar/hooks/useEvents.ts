@@ -10,6 +10,7 @@
 
 import * as React from 'react';
 import { IEventItem } from '../models/IEventItem';
+import { IFieldInfo } from '../models/IFieldInfo';
 import { fetchEvents, IEventFieldMapping } from '../services/EventService';
 
 /**
@@ -29,32 +30,19 @@ export interface IUseEventsResult {
 /**
  * Fetches and manages calendar events for the given list and mapping config.
  *
- * The hook re-fetches whenever the list, field mapping, selected display fields,
- * max-events cap, or the manual refresh key changes. It uses a `cancelled` flag
- * in the effect cleanup to prevent stale responses from overwriting state after
- * the component has re-rendered or unmounted.
- *
- * @param listId         - GUID of the SharePoint list, or `undefined` if none is selected yet.
- * @param fieldMapping   - Core column mapping configuration.
- * @param selectedFields - Internal names of additional columns to fetch.
- * @param maxEvents      - Maximum number of events to retrieve.
+ * @param listId          - GUID of the SharePoint list, or `undefined` if none is selected yet.
+ * @param fieldMapping    - Core column mapping configuration.
+ * @param selectedFields  - Internal names of additional columns to fetch.
+ * @param maxEvents       - Maximum number of events to retrieve.
+ * @param availableFields - Field metadata used to detect User/Lookup fields for $expand.
  * @returns An {@link IUseEventsResult} with events, loading state, error, and a refresh callback.
- *
- * @example
- * ```tsx
- * const { events, loading, error, refresh } = useEvents(
- *   props.selectedListId,
- *   fieldMapping,
- *   props.selectedFields,
- *   props.maxEvents
- * );
- * ```
  */
 export function useEvents(
   listId: string | undefined,
   fieldMapping: IEventFieldMapping,
   selectedFields: string[],
-  maxEvents: number
+  maxEvents: number,
+  availableFields?: IFieldInfo[]
 ): IUseEventsResult {
   const [events, setEvents] = React.useState<IEventItem[]>([]);
   const [loading, setLoading] = React.useState(false);
@@ -67,6 +55,7 @@ export function useEvents(
   const mappingKey = fieldMapping.titleField + '|' + fieldMapping.startDateField + '|' +
     fieldMapping.endDateField + '|' + fieldMapping.allDayField + '|' +
     fieldMapping.categoryField + '|' + fieldMapping.locationField;
+  const availableFieldsKey = availableFields ? availableFields.map(f => f.internalName).join(',') : '';
 
   React.useEffect(() => {
     // Bail out early if the minimum required config is not yet available
@@ -80,7 +69,7 @@ export function useEvents(
     setLoading(true);
     setError(undefined);
 
-    fetchEvents(listId, fieldMapping, selectedFields, maxEvents)
+    fetchEvents(listId, fieldMapping, selectedFields, maxEvents, availableFields)
       .then(result => {
         if (!cancelled) {
           setEvents(result);
@@ -96,7 +85,7 @@ export function useEvents(
 
     // Cleanup: mark this effect cycle as cancelled so in-flight fetches are ignored
     return () => { cancelled = true; };
-  }, [listId, mappingKey, fieldsKey, maxEvents, refreshKey]);
+  }, [listId, mappingKey, fieldsKey, maxEvents, refreshKey, availableFieldsKey]);
 
   /** Bumping the key forces useEffect to re-run and fetch fresh data. */
   const refresh = React.useCallback(() => setRefreshKey(k => k + 1), []);

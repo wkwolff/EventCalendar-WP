@@ -52,7 +52,7 @@ const EventCalendar: React.FC<IEventCalendarProps> = (props) => {
   const [selectedEvent, setSelectedEvent] = React.useState<IEventItem | undefined>(undefined);
 
   // Fetch event data from the SharePoint list using the configured field mapping
-  const { events, loading, error } = useEvents(listId, fieldMapping, selectedFields, maxEvents);
+  const { events, loading, error } = useEvents(listId, fieldMapping, selectedFields, maxEvents, availableFields);
 
   // Sync the active view whenever the property pane settings change
   React.useEffect(() => {

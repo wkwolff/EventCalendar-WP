@@ -11,6 +11,10 @@
 
 import { getSP } from './PnPSetup';
 import { IEventItem } from '../models/IEventItem';
+import { IFieldInfo } from '../models/IFieldInfo';
+
+/** Field types that require $expand to retrieve their sub-properties (e.g., Title, EMail). */
+const EXPANDABLE_FIELD_TYPES = new Set(['User', 'UserMulti', 'Lookup', 'LookupMulti']);
 
 /**
  * Fields that require `$expand` or are otherwise incompatible with a plain
@@ -20,6 +24,8 @@ import { IEventItem } from '../models/IEventItem';
 const BLOCKED_SELECT_FIELDS = new Set([
   'ParticipantsPicker',
   'ParticipantsPickerId',
+  'ItemChildCount',
+  'FolderChildCount',
 ]);
 
 /**
@@ -123,9 +129,18 @@ export async function fetchEvents(
   listId: string,
   fieldMapping: IEventFieldMapping,
   selectedFields: string[],
-  maxEvents: number
+  maxEvents: number,
+  availableFields?: IFieldInfo[]
 ): Promise<IEventItem[]> {
   const sp = getSP();
+
+  // Build a type lookup from available field metadata
+  const fieldTypeMap = new Map<string, string>();
+  if (availableFields) {
+    for (const f of availableFields) {
+      fieldTypeMap.set(f.internalName, f.fieldType);
+    }
+  }
 
   // Remove fields that are known to break REST $select queries
   const safeFields = selectedFields.filter(f => !BLOCKED_SELECT_FIELDS.has(f));
@@ -141,20 +156,58 @@ export async function fetchEvents(
   // Deduplicate: user-selected fields that already appear in core are skipped
   const coreSet = new Set(coreSelect);
   const extraFields = safeFields.filter(f => !coreSet.has(f));
-  const selectFields = [...coreSelect, ...extraFields];
 
-  // Execute the REST query with $select, $orderby, and $top
-  const items = await sp.web.lists.getById(listId).items
+  // Separate expandable fields (User, Lookup) from plain fields
+  const expandFields: string[] = [];
+  const plainFields: string[] = [];
+  for (const f of extraFields) {
+    const fType = fieldTypeMap.get(f) || '';
+    if (EXPANDABLE_FIELD_TYPES.has(fType)) {
+      expandFields.push(f);
+    } else {
+      plainFields.push(f);
+    }
+  }
+
+  // Build $select: plain fields use their name directly;
+  // expandable fields use FieldName/Title (and /EMail for User types)
+  const selectFields = [...coreSelect, ...plainFields];
+  for (const f of expandFields) {
+    const fType = fieldTypeMap.get(f) || '';
+    selectFields.push(f + '/Title');
+    if (fType === 'User' || fType === 'UserMulti') {
+      selectFields.push(f + '/EMail');
+    }
+  }
+
+  // Build the query — add $expand for lookup/person fields
+  let query = sp.web.lists.getById(listId).items
     .select(...selectFields)
     .orderBy(fieldMapping.startDateField, true)
-    .top(maxEvents)();
+    .top(maxEvents);
+
+  if (expandFields.length > 0) {
+    query = query.expand(...expandFields);
+  }
+
+  const items = await query();
 
   // Map each raw SP item into the normalized IEventItem shape
   const mapped = items.map((item: Record<string, unknown>) => {
-    // Collect extra field values into a generic bag for the detail panel
+    // Collect extra field values into a generic bag for the detail panel.
+    // Expanded fields (User/Lookup) return objects like { Title, EMail } —
+    // flatten them into a display-friendly string.
     const fields: Record<string, unknown> = {};
-    for (const f of extraFields) {
+    for (const f of plainFields) {
       fields[f] = item[f];
+    }
+    for (const f of expandFields) {
+      const expanded = item[f] as Record<string, unknown> | null;
+      if (expanded && expanded.Title) {
+        fields[f] = expanded.Title as string;
+      } else {
+        fields[f] = null;
+      }
     }
 
     // Scan extra fields for the first value that looks like an image URL
@@ -185,27 +238,26 @@ export async function fetchEvents(
     };
   });
 
-  // Fetch attachment details for items that have them
+  // Fetch attachment details for items that have them.
+  // Sequential loop to satisfy require-atomic-updates lint rule.
   const itemsWithAttachments = mapped.filter(e => e.hasAttachments);
-  await Promise.all(
-    itemsWithAttachments.map(async (event) => {
-      try {
-        const atts = await sp.web.lists.getById(listId).items
-          .getById(event.id).attachmentFiles() as Array<{ FileName: string; ServerRelativeUrl: string }>;
-        event.attachments = atts.map(a => ({
-          fileName: a.FileName,
-          url: a.ServerRelativeUrl,
-        }));
-        // Use first image attachment as card image if none was found from fields
-        if (!event.imageUrl) {
-          const imgAtt = atts.find(a => isImageUrl(a.FileName));
-          if (imgAtt) event.imageUrl = imgAtt.ServerRelativeUrl;
-        }
-      } catch {
-        // Silently skip — attachments are supplementary
+  for (const evt of itemsWithAttachments) {
+    try {
+      const atts = await sp.web.lists.getById(listId).items
+        .getById(evt.id).attachmentFiles() as Array<{ FileName: string; ServerRelativeUrl: string }>;
+      evt.attachments = atts.map(a => ({
+        fileName: a.FileName,
+        url: a.ServerRelativeUrl,
+      }));
+      // Use first image attachment as card image if none was found from fields
+      if (!evt.imageUrl) {
+        const imgAtt = atts.find(a => isImageUrl(a.FileName));
+        if (imgAtt) evt.imageUrl = imgAtt.ServerRelativeUrl;
       }
-    })
-  );
+    } catch {
+      // Silently skip — attachments are supplementary
+    }
+  }
 
   // Strip the temporary hasAttachments flag
   return mapped.map(({ hasAttachments: _, ...rest }) => rest);

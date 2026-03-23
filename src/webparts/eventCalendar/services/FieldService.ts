@@ -31,6 +31,8 @@ const SYSTEM_FIELDS = new Set([
   '_ComplianceTagWrittenTime', '_ComplianceTagUserId',
   '_IsRecord', 'AccessPolicy', '_VirusStatus', '_VirusVendorID',
   '_VirusInfo', '_CommentFlags', '_CommentCount',
+  // Fields that don't exist on flat list items
+  'ItemChildCount', 'FolderChildCount',
 ]);
 
 /** Field types that cannot be projected via REST `$select`. */
