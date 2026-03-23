@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "event-calendar-wp-client-side-solution",
+    "id": "da90053e-aaf5-4223-a87f-f68afc225d1e",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.22.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "event-calendar-wp description"
+      },
+      "longDescription": {
+        "default": "event-calendar-wp description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "event-calendar-wp Feature",
+        "description": "The feature that activates elements of the event-calendar-wp solution.",
+        "id": "93d07827-2767-4096-8cb1-fef9828c11fd",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/event-calendar-wp.sppkg"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "whichFolder": "subdir",
+    "solutionName": "event-calendar-wp",
+    "environment": "spo",
+    "packageManager": "npm",
+    "skipFeatureDeployment": true,
+    "useGulp": false,
+    "componentType": "webpart",
+    "template": "react",
+    "componentName": "EventCalendar",
+    "componentDescription": "Event Calendar Web Part",
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.18.0",
+    "sdksVersions": {},
+    "version": "1.22.2",
+    "libraryName": "event-calendar-wp",
+    "libraryId": "da90053e-aaf5-4223-a87f-f68afc225d1e",
+    "solutionShortDescription": "event-calendar-wp description",
+    "isDomainIsolated": false
+  }
+}

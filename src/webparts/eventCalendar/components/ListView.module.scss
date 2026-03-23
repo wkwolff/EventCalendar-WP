@@ -1,0 +1,24 @@
+.listView {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.group {
+  margin-bottom: 8px;
+}
+
+.dateHeader {
+  font-size: 13px;
+  font-weight: 600;
+  color: "[theme:bodySubtext, default: #605e5c]";
+  padding: 8px 4px 4px;
+  margin-bottom: 0;
+  text-transform: none;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 16px;
+  color: "[theme:bodySubtext, default: #605e5c]";
+  font-size: 14px;
+}

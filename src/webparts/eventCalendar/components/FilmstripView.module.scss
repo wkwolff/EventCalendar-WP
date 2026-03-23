@@ -1,0 +1,54 @@
+.filmstripView {
+  position: relative;
+}
+
+.track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 4px 0 16px;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: "[theme:neutralTertiaryAlt, default: #c8c6c4]";
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: "[theme:neutralSecondary, default: #8a8886]";
+  }
+}
+
+.dotActive {
+  background: "[theme:themePrimary, default: #0078d4]";
+
+  &:hover {
+    background: "[theme:themePrimary, default: #0078d4]";
+  }
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 16px;
+  color: "[theme:bodySubtext, default: #605e5c]";
+  font-size: 14px;
+}
