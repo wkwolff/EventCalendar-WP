@@ -18,7 +18,20 @@ A SharePoint Framework (SPFx) web part that displays events from any SharePoint 
 - **Theme-aware** — Inherits SharePoint site theme colors for a native look and feel
 - **Multi-line text support** — Rich text and multi-line fields render cleanly with line clamping
 - **Detail panel** — Click any event to open a side panel with full event details, images, and field values
+- **Attachment support** — List item attachments displayed in the detail panel with clickable links; image attachments used as card thumbnails
+- **Person/Lookup fields** — User and Lookup columns rendered via `$expand` showing display names
 - **Teams compatible** — Works in SharePoint pages, Teams tabs, and Teams personal apps
+
+## Screenshots
+
+### Filmstrip Card with Detail Panel
+![Detail Panel](src/webparts/eventCalendar/assets/detail-panel.png)
+
+### Property Pane — Data Source & Column Mapping
+![Property Pane Config](src/webparts/eventCalendar/assets/property-pane-config.png)
+
+### Property Pane — Display Settings & Card Toggles
+![Display Settings](src/webparts/eventCalendar/assets/display-settings.png)
 
 ## Solution
 
