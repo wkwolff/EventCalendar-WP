@@ -1,12 +1,15 @@
 # WC - Events
 
-A SharePoint Framework (SPFx) web part that displays events from any SharePoint list in filmstrip, compact list, or full calendar views. Designed for Wolff Creative SharePoint Online sites.
+The out-of-the-box SharePoint Events and Calendar web parts only display a fixed set of fields — title, date, and location. If your events list has custom columns (registration links, categories, contact emails, batch numbers, knowledge levels, or any other metadata), the OOB web parts simply ignore them.
+
+**WC - Events solves this.** Pick any list, map your columns, and choose exactly which fields appear on the cards and in the detail panel — all from the property pane, no code required.
 
 ![SPFx Version](https://img.shields.io/badge/SPFx-1.22.2-green.svg)
 ![Node.js Version](https://img.shields.io/badge/Node.js-v22.14+-blue.svg)
 
 ## Features
 
+- **Display any field** — Select which custom columns show on event cards and in the detail panel; the OOB web parts can't do this
 - **Filmstrip layout** — Horizontal scrolling event cards with pagination dots, matching the OOB SharePoint Events web part design
 - **Compact list layout** — Vertical event list grouped by relative dates (Today, Tomorrow, This week, etc.)
 - **Calendar view** — Full month/week/day calendar powered by FullCalendar
