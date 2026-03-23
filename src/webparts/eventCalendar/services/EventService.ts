@@ -16,23 +16,29 @@ export interface IEventFieldMapping {
   locationField: string;
 }
 
+const IMAGE_EXT_REGEX = /\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?|$)/i;
+
+function isImageUrl(url: string): boolean {
+  return IMAGE_EXT_REGEX.test(url);
+}
+
 function extractImageUrl(value: unknown): string {
   if (!value) return '';
   if (typeof value === 'string') {
     // Could be a JSON string from an Image column
     try {
       const parsed = JSON.parse(value);
-      if (parsed && parsed.serverRelativeUrl) return parsed.serverRelativeUrl;
-      if (parsed && parsed.Url) return parsed.Url;
+      const url = (parsed && (parsed.serverRelativeUrl || parsed.Url)) || '';
+      if (url && isImageUrl(url)) return url;
     } catch {
       // Plain URL string
-      if (/\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?|$)/i.test(value)) return value;
+      if (isImageUrl(value)) return value;
     }
   }
   if (typeof value === 'object' && value !== null) {
     const obj = value as Record<string, unknown>;
-    if (obj.serverRelativeUrl) return obj.serverRelativeUrl as string;
-    if (obj.Url) return obj.Url as string;
+    const url = (obj.serverRelativeUrl as string) || (obj.Url as string) || '';
+    if (url && isImageUrl(url)) return url;
   }
   return '';
 }

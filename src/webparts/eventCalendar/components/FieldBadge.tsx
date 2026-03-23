@@ -11,14 +11,10 @@ export interface IFieldBadgeProps {
 // ── Styles ──
 
 const badgeStyle: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  padding: '3px 10px',
-  margin: '2px 4px 2px 0',
-  borderRadius: 12,
+  display: 'block',
   fontSize: 12,
-  lineHeight: '18px',
-  maxWidth: '100%',
+  lineHeight: '1.4',
+  color: '#605e5c',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
@@ -178,7 +174,6 @@ const linkStyle: React.CSSProperties = {
 /** Compact badge for card view */
 const CompactBadge: React.FC<{ field: IFieldInfo; value: unknown }> = ({ field, value }) => {
   const fieldType = field.fieldType;
-  const colors = getBadgeColors();
 
   // Image fields — render as small thumbnail in card
   if (isImageFieldValue(field, value)) {
@@ -200,6 +195,27 @@ const CompactBadge: React.FC<{ field: IFieldInfo; value: unknown }> = ({ field, 
     }
   }
 
+  // Note / multi-line text — render as a short text block, not a pill
+  if (fieldType === 'Note') {
+    const text = typeof value === 'string' && isHtml(value)
+      ? stripHtml(value).substring(0, 120)
+      : String(value).substring(0, 120);
+    if (!text) return null;
+    return (
+      <div style={{
+        fontSize: 12,
+        color: '#605e5c',
+        lineHeight: '1.4',
+        display: '-webkit-box',
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: 'vertical' as React.CSSProperties['WebkitBoxOrient'],
+        overflow: 'hidden',
+      }}>
+        <strong>{field.displayName}:</strong> {text}
+      </div>
+    );
+  }
+
   // URL fields → clickable link
   if (fieldType === 'URL' && typeof value === 'object' && value !== null) {
     const urlObj = value as Record<string, unknown>;
@@ -207,8 +223,8 @@ const CompactBadge: React.FC<{ field: IFieldInfo; value: unknown }> = ({ field, 
     const desc = (urlObj.Description as string) || url;
     if (url) {
       return (
-        <span style={{ ...badgeStyle, backgroundColor: colors.bg, color: colors.color }}>
-          <strong style={{ marginRight: 4 }}>{field.displayName}:</strong>
+        <span style={badgeStyle}>
+          <strong>{field.displayName}:</strong>
           <a
             href={url}
             target="_blank"
@@ -229,8 +245,8 @@ const CompactBadge: React.FC<{ field: IFieldInfo; value: unknown }> = ({ field, 
   // Auto-link emails
   if (strVal && isEmail(strVal)) {
     return (
-      <span style={{ ...badgeStyle, backgroundColor: colors.bg, color: colors.color }}>
-        <strong style={{ marginRight: 4 }}>{field.displayName}:</strong>
+      <span style={badgeStyle}>
+        <strong>{field.displayName}:</strong>
         <a
           href={'mailto:' + strVal}
           onClick={(e) => e.stopPropagation()}
@@ -245,8 +261,8 @@ const CompactBadge: React.FC<{ field: IFieldInfo; value: unknown }> = ({ field, 
   // Auto-link URLs in text fields
   if (strVal && isUrl(strVal)) {
     return (
-      <span style={{ ...badgeStyle, backgroundColor: colors.bg, color: colors.color }}>
-        <strong style={{ marginRight: 4 }}>{field.displayName}:</strong>
+      <span style={badgeStyle}>
+        <strong>{field.displayName}:</strong>
         <a
           href={strVal}
           target="_blank"
@@ -262,10 +278,10 @@ const CompactBadge: React.FC<{ field: IFieldInfo; value: unknown }> = ({ field, 
 
   return (
     <span
-      style={{ ...badgeStyle, backgroundColor: colors.bg, color: colors.color }}
+      style={badgeStyle}
       title={field.displayName + ': ' + display}
     >
-      <strong style={{ marginRight: 4 }}>{field.displayName}:</strong> {display}
+      <strong>{field.displayName}:</strong> {display}
     </span>
   );
 };
