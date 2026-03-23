@@ -13,6 +13,7 @@ import '@pnp/sp/webs';
 import '@pnp/sp/lists';
 import '@pnp/sp/items';
 import '@pnp/sp/fields';
+import '@pnp/sp/attachments';
 import { SPFI } from '@pnp/sp';
 
 /**

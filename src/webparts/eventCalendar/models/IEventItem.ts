@@ -56,4 +56,7 @@ export interface IEventItem {
 
   /** Bag of additional column values selected by the user for the detail view. */
   fields: Record<string, unknown>;
+
+  /** File attachments on the list item (fetched separately from item fields). */
+  attachments: Array<{ fileName: string; url: string }>;
 }

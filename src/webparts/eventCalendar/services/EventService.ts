@@ -131,7 +131,8 @@ export async function fetchEvents(
   const safeFields = selectedFields.filter(f => !BLOCKED_SELECT_FIELDS.has(f));
 
   // Build the core $select list — these fields are always needed for rendering
-  const coreSelect = ['Id', fieldMapping.titleField, fieldMapping.startDateField];
+  // Include 'Attachments' boolean so we know which items have files to fetch
+  const coreSelect = ['Id', 'Attachments', fieldMapping.titleField, fieldMapping.startDateField];
   if (fieldMapping.endDateField) coreSelect.push(fieldMapping.endDateField);
   if (fieldMapping.allDayField) coreSelect.push(fieldMapping.allDayField);
   if (fieldMapping.categoryField) coreSelect.push(fieldMapping.categoryField);
@@ -149,7 +150,7 @@ export async function fetchEvents(
     .top(maxEvents)();
 
   // Map each raw SP item into the normalized IEventItem shape
-  return items.map((item: Record<string, unknown>) => {
+  const mapped = items.map((item: Record<string, unknown>) => {
     // Collect extra field values into a generic bag for the detail panel
     const fields: Record<string, unknown> = {};
     for (const f of extraFields) {
@@ -179,6 +180,33 @@ export async function fetchEvents(
       location: fieldMapping.locationField ? (item[fieldMapping.locationField] as string) || '' : '',
       imageUrl,
       fields,
+      hasAttachments: !!item.Attachments,
+      attachments: [] as Array<{ fileName: string; url: string }>,
     };
   });
+
+  // Fetch attachment details for items that have them
+  const itemsWithAttachments = mapped.filter(e => e.hasAttachments);
+  await Promise.all(
+    itemsWithAttachments.map(async (event) => {
+      try {
+        const atts = await sp.web.lists.getById(listId).items
+          .getById(event.id).attachmentFiles() as Array<{ FileName: string; ServerRelativeUrl: string }>;
+        event.attachments = atts.map(a => ({
+          fileName: a.FileName,
+          url: a.ServerRelativeUrl,
+        }));
+        // Use first image attachment as card image if none was found from fields
+        if (!event.imageUrl) {
+          const imgAtt = atts.find(a => isImageUrl(a.FileName));
+          if (imgAtt) event.imageUrl = imgAtt.ServerRelativeUrl;
+        }
+      } catch {
+        // Silently skip — attachments are supplementary
+      }
+    })
+  );
+
+  // Strip the temporary hasAttachments flag
+  return mapped.map(({ hasAttachments: _, ...rest }) => rest);
 }

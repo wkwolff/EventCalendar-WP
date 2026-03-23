@@ -191,6 +191,41 @@ const EventDetailPanel: React.FC<IEventDetailPanelProps> = ({
             ))}
           </div>
         )}
+
+        {/* Attachments section */}
+        {event.attachments && event.attachments.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <div style={{
+              fontWeight: 600,
+              fontSize: 12,
+              color: '#605e5c',
+              marginBottom: 8,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}>
+              Attachments
+            </div>
+            {event.attachments.map((att, i) => (
+              <div key={i} style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '6px 0',
+                borderBottom: '1px solid #edebe9',
+              }}>
+                <Icon iconName="Attach" style={{ fontSize: 14, color: '#605e5c' }} />
+                <a
+                  href={att.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: '#0078d4', textDecoration: 'none', fontSize: 13 }}
+                >
+                  {att.fileName}
+                </a>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </Panel>
   );

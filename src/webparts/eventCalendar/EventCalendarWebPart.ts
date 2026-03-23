@@ -24,7 +24,7 @@ import {
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
-import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
+// PropertyFieldListPicker replaced with a standard dropdown filtered to event-eligible lists
 
 import * as strings from 'EventCalendarWebPartStrings';
 import EventCalendar from './components/EventCalendar';
@@ -32,7 +32,7 @@ import { IEventCalendarProps } from './components/IEventCalendarProps';
 import { IEventCalendarWebPartProps } from './models/IWebPartProps';
 import { IFieldInfo } from './models/IFieldInfo';
 import { initPnP } from './services/PnPSetup';
-import { fetchAllListFields, getDisplayFields, autoDetectFieldMappings } from './services/FieldService';
+import { fetchAllListFields, fetchEventLists, getDisplayFields, autoDetectFieldMappings } from './services/FieldService';
 
 /**
  * SharePoint Framework web part that renders an event calendar sourced from
@@ -45,6 +45,9 @@ export default class EventCalendarWebPart extends BaseClientSideWebPart<IEventCa
 
   /** Cached field metadata for the currently selected SharePoint list. */
   private _allFields: IFieldInfo[] = [];
+
+  /** Cached list of event-eligible lists (lists with DateTime fields). */
+  private _eventLists: Array<{ id: string; title: string }> = [];
 
   /**
    * Initializes PnPjs context and sets sensible defaults for any web part
@@ -68,6 +71,9 @@ export default class EventCalendarWebPart extends BaseClientSideWebPart<IEventCa
     if (this.properties.showLocation === undefined) this.properties.showLocation = true;
     if (this.properties.showTime === undefined) this.properties.showTime = true;
     if (this.properties.showImage === undefined) this.properties.showImage = true;
+
+    // Load event-eligible lists for the dropdown
+    await this._loadEventLists();
 
     // Pre-load field metadata when the web part already has a list configured
     if (this.properties.selectedListId) {
@@ -240,6 +246,24 @@ export default class EventCalendarWebPart extends BaseClientSideWebPart<IEventCa
    * pane can still render a fallback message.
    * @param listId - The GUID of the SharePoint list to query.
    */
+  /** Loads the filtered list of event-eligible lists from the current site. */
+  private async _loadEventLists(): Promise<void> {
+    try {
+      this._eventLists = await fetchEventLists();
+    } catch {
+      this._eventLists = [];
+    }
+  }
+
+  /** Returns dropdown options for the event list picker. */
+  private _getEventListOptions(): Array<{ key: string; text: string }> {
+    const options: Array<{ key: string; text: string }> = [{ key: '', text: '(Select a list)' }];
+    for (const list of this._eventLists) {
+      options.push({ key: list.id, text: list.title });
+    }
+    return options;
+  }
+
   private async _loadFields(listId: string): Promise<void> {
     try {
       this._allFields = await fetchAllListFields(listId);
@@ -496,16 +520,12 @@ export default class EventCalendarWebPart extends BaseClientSideWebPart<IEventCa
             {
               groupName: strings.DataSourceGroupName,
               groupFields: [
-                PropertyFieldListPicker('selectedListId', {
+                // Only show lists that contain DateTime fields (event/calendar lists)
+                PropertyPaneDropdown('selectedListId', {
                   label: strings.ListPickerLabel,
-                  selectedList: this.properties.selectedListId,
-                  includeHidden: false,
-                  orderBy: PropertyFieldListPickerOrderBy.Title,
-                  onPropertyChange: this.onPropertyPaneFieldChanged.bind(this),
-                  properties: this.properties,
-                  context: this.context as never,
-                  key: 'listPickerFieldId',
-                }),
+                  options: this._getEventListOptions(),
+                  selectedKey: this.properties.selectedListId || '',
+                }) as IPropertyPaneField<unknown>,
               ],
             },
             {

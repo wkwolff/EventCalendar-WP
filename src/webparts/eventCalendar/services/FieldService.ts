@@ -45,6 +45,60 @@ const UNSUPPORTED_FIELD_NAMES = new Set([
 ]);
 
 /**
+ * Fetches lists that are likely event/calendar lists by checking for the
+ * presence of DateTime fields. Includes both classic Calendar lists (template 106)
+ * and modern Events lists (template 100 with date columns).
+ *
+ * @returns A promise resolving to an array of `{ id, title }` for eligible lists.
+ */
+export async function fetchEventLists(): Promise<Array<{ id: string; title: string }>> {
+  const sp = getSP();
+
+  // Fetch all non-hidden lists with their base template
+  const lists = await sp.web.lists
+    .filter("Hidden eq false")
+    .select('Id', 'Title', 'BaseTemplate')() as Array<{
+      Id: string;
+      Title: string;
+      BaseTemplate: number;
+    }>;
+
+  // Classic Calendar lists (template 106) are always included
+  const calendarLists = lists.filter(l => l.BaseTemplate === 106);
+  const calendarIds = new Set(calendarLists.map(l => l.Id));
+
+  // For remaining lists, check if they have DateTime fields (event-like lists)
+  const candidates = lists.filter(l =>
+    l.BaseTemplate !== 106 &&
+    !l.Title.startsWith('_') &&
+    // Exclude document libraries (101), form libraries, and system lists
+    l.BaseTemplate !== 101 &&
+    l.BaseTemplate !== 115 &&
+    l.BaseTemplate !== 119 &&
+    l.BaseTemplate !== 851
+  );
+  const eventLists = [...calendarLists];
+
+  for (const list of candidates) {
+    try {
+      const fields = await sp.web.lists.getById(list.Id).fields
+        .filter("Hidden eq false and (TypeAsString eq 'DateTime')")
+        .select('InternalName')
+        .top(1)();
+      if (fields.length > 0 && !calendarIds.has(list.Id)) {
+        eventLists.push(list);
+      }
+    } catch {
+      // Skip lists we can't query
+    }
+  }
+
+  return eventLists
+    .sort((a, b) => a.Title.localeCompare(b.Title))
+    .map(l => ({ id: l.Id, title: l.Title }));
+}
+
+/**
  * Fetches all user-facing fields for a SharePoint list, filtering out hidden
  * columns, system infrastructure columns, and field types incompatible with
  * REST queries.
