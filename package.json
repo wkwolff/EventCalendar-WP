@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "WC - Events: SharePoint Framework web part for displaying events in filmstrip, compact list, or calendar views.",
   "author": "W. Kevin Wolff <Wolff Creative>",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "private": true,
   "engines": {
     "node": ">=22.14.0 < 23.0.0"

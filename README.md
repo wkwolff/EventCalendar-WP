@@ -2,7 +2,7 @@
 
 The out-of-the-box SharePoint Events and Calendar web parts only display a fixed set of fields — title, date, and location. If your events list has custom columns (registration links, categories, contact emails, batch numbers, knowledge levels, or any other metadata), the OOB web parts simply ignore them.
 
-**WC - Events solves this.** Pick any list, map your columns, and choose exactly which fields appear on the cards and in the detail panel — all from the property pane, no code required.
+**WC - Events solves this.** Pick any list, map your columns, and choose exactly which fields appear on the cards and in the detail panel — all from the property pane, no code required. Free and open source — use it, fork it, improve it.
 
 ![SPFx Version](https://img.shields.io/badge/SPFx-1.22.2-green.svg)
 ![Node.js Version](https://img.shields.io/badge/Node.js-v22.14+-blue.svg)
@@ -203,10 +203,20 @@ src/webparts/eventCalendar/
 - [Fluent UI React](https://developer.microsoft.com/fluentui)
 - [SPFx Property Controls](https://pnp.github.io/sp-dev-fx-property-controls/)
 
+## Contributing
+
+Contributions are welcome! Feel free to open issues, submit pull requests, or fork the project for your own needs.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m 'Add my feature'`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
 ## License
 
-This project is proprietary to Wolff Creative. Unauthorized distribution is prohibited.
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
-*Developed by W. Kevin Wolff, Wolff Creative*
+*Created by W. Kevin Wolff, Wolff Creative*
